@@ -68,9 +68,6 @@ static void parse_cmd(char *cmd) {
     int arg_index = 0;
 
     char cur;
-
-    char resp[10];
-
     bool overflow = false;
 
     // split the command into arguments
@@ -93,12 +90,10 @@ static void parse_cmd(char *cmd) {
     }
 
     if (overflow) {
-        usprintf(resp, "error\r\n");
-        usb_send_str(resp);
+        usb_send_str("invalid command\r\n");
     } else {
         // terminate the last argument string
         args[arg_count][arg_index] = '\0';
-
         // call the command handler
         cmd_callback(arg_count, args);
     }
