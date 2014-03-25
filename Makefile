@@ -14,7 +14,7 @@ MCU = TM4C123GH6PM
 
 # SOURCES: list of input source sources
 SOURCES = main.c startup_gcc.c usb_serial_structs.c usb.c ustdlib.c
-SOURCES += can.c
+SOURCES += can.c commands.c
 # INCLUDES: list of includes, by default, use Includes directory
 INCLUDES = -IInclude
 # OUTDIR: directory to use for output

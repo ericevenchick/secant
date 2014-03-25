@@ -32,6 +32,7 @@
 #include "usb_serial_structs.h"
 #include "usb.h"
 #include "can.h"
+#include "commands.h"
 
 // define the systick period at 1 ms
 #define SYSTICKS_PER_SECOND 1000
@@ -88,6 +89,7 @@ void hw_init() {
     ROM_GPIOPinTypeCAN(GPIO_PORTE_BASE, GPIO_PIN_4 | GPIO_PIN_5);
     ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_CAN0);
     while (!SysCtlPeripheralReady(SYSCTL_PERIPH_CAN0));
+    CANInit(CAN0_BASE);
 
     // TODO: configure CAN1 pins and peripherial
 
@@ -98,37 +100,37 @@ void hw_init() {
 }
 
 // callback for when a command is received over USB
+// decide which command should be executed, then run it
 void cmd_handler(int argc, char argv[CMD_MAX_ARGS][CMD_MAX_ARG_SIZE]) {
-    tCANMsgObject tx_msg;
-    uint8_t tx_data[8];
+    uint32_t status = CMD_ERROR_UNKNOWN_CMD;
+    char resp[MAX_RESP_SIZE];
 
-    // fake commands
-    if (ustrcasecmp("go", argv[0]) == 0) {
-        can_enable(CAN0_BASE, 500000);
-        usb_send_str("going!\r\n");
-        return;
+    // command: bus
+    if (ustrcasecmp("bus", argv[0]) == 0) {
+        status = cmd_bus(argc, argv);
     }
-    if (ustrcasecmp("send", argv[0]) == 0) {
-        tx_msg.ui32MsgID = 0x100;
-        tx_msg.ui32MsgLen = 8;
-        tx_msg.ui32Flags = 0;
-        tx_data[0] = 1;
-        tx_data[1] = 2;
-        tx_data[2] = 3;
-        tx_msg.pui8MsgData = tx_data;
-
-        can_send(CAN0_BASE, &tx_msg);
-        return;
+    // command: tx
+    if (ustrcasecmp("tx", argv[0]) == 0) {
+        status = cmd_tx(argc, argv);
     }
-
     // command: reset
-    // immediately reset the device
     if (ustrcasecmp("reset", argv[0]) == 0) {
-        SysCtlReset();
-        return;
+        status = cmd_reset(argc, argv);
+        // never returns due to sw reset
     }
-    // no commands matched, send an error
-    usb_send_str("unknown command\r\n");
+
+    // handle errors
+    if (status == CMD_ERROR_UNKNOWN_CMD) {
+        // no commands matched
+        usnprintf(resp, MAX_RESP_SIZE, "error: unknown command\r\n");
+    } else if (status == CMD_ERROR_INVALID_ARG) {
+        usnprintf(resp, MAX_RESP_SIZE, "error: invalid args\r\n");
+    } else {
+        // no error
+        usnprintf(resp, MAX_RESP_SIZE, "ok: %s\r\n", argv[0]);
+    }
+    // send response
+    usb_send_str(resp);
 }
 
 int main(void)

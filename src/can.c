@@ -13,23 +13,31 @@
 #include "driverlib/pin_map.h"
 #include "driverlib/sysctl.h"
 
-void can_enable(uint32_t base, uint32_t baud) {
-    CANInit(base);
-    CANBitRateSet(base, SysCtlClockGet(), baud);
-    CANEnable(base);
+#include "can.h"
+
+// convert bus number to peripherial base
+static uint32_t get_base(uint32_t bus) {
+    /* TODO: enable 2nd can bus
+    if (bus == CAN_BUS_2) {
+        return CAN1_BASE;
+    } else {
+        return CAN0_BASE;
+    }*/
+    return CAN0_BASE;
 }
 
-void can_send(uint32_t base, tCANMsgObject *msg_ptr) {
-    tCANMsgObject tx_msg;
-    uint8_t tx_data[8];
+void can_enable(uint32_t bus) {
+    CANEnable(get_base(bus));
+}
 
-    tx_msg.ui32MsgID = 0x100;
-    tx_msg.ui32MsgLen = 3;
-    tx_msg.ui32Flags = 0;
-    tx_data[0] = 1;
-    tx_data[1] = 2;
-    tx_data[2] = 3;
-    tx_msg.pui8MsgData = tx_data;
+void can_disable(uint32_t bus) {
+    CANDisable(get_base(bus));
+}
 
-    CANMessageSet(base, 1, &tx_msg, MSG_OBJ_TYPE_TX);
+void can_set_rate(uint32_t bus, uint32_t rate) {
+    CANBitRateSet(get_base(bus), SysCtlClockGet(), rate);
+}
+
+void can_send(uint32_t bus, tCANMsgObject *msg_ptr) {
+    CANMessageSet(get_base(bus), 1, msg_ptr, MSG_OBJ_TYPE_TX);
 }
