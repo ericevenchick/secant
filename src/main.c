@@ -88,8 +88,6 @@ void hw_init() {
     ROM_GPIOPinConfigure(GPIO_PE4_CAN0RX);
     ROM_GPIOPinTypeCAN(GPIO_PORTE_BASE, GPIO_PIN_4 | GPIO_PIN_5);
     ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_CAN0);
-    while (!SysCtlPeripheralReady(SYSCTL_PERIPH_CAN0));
-    CANInit(CAN0_BASE);
 
     // TODO: configure CAN1 pins and peripherial
 
@@ -133,13 +131,38 @@ void cmd_handler(int argc, char argv[CMD_MAX_ARGS][CMD_MAX_ARG_SIZE]) {
     usb_send_str(resp);
 }
 
+volatile uint32_t pending_count = 0;
+volatile tCANMsgObject pending_msgs[500];
+
+void can_handler(uint32_t bus, tCANMsgObject *msg) {
+    pending_msgs[pending_count] = *msg;
+    pending_count++;
+}
+
 int main(void)
 {
+    char resp[MAX_RESP_SIZE];
+    volatile tCANMsgObject msg;
+
     hw_init();
     usb_init(cmd_handler);
+    can_init(can_handler);
 
     // main loop
     while(1)
     {
+        if (pending_count > 0) {
+            IntMasterDisable();
+            pending_count--;
+            msg = pending_msgs[pending_count];
+            usnprintf(resp, MAX_RESP_SIZE,
+                        "rx %03X%d%02X%02X%02X%02X%02X%02X%02X%02X\r\n",
+                        msg.ui32MsgID, msg.ui32MsgLen, msg.pui8MsgData[0],
+                        msg.pui8MsgData[1], msg.pui8MsgData[2], msg.pui8MsgData[3],
+                        msg.pui8MsgData[4], msg.pui8MsgData[5], msg.pui8MsgData[6],
+                        msg.pui8MsgData[7]);
+            usb_send_str(resp);
+            IntMasterEnable();
+        }
     }
 }
