@@ -1,9 +1,6 @@
 #ifndef _COMMANDS_H_
 #define _COMMANDS_H_
 
-// maximum size of a response string
-#define MAX_RESP_SIZE 50
-
 enum {
     CMD_ERROR_NONE = 0,
     CMD_ERROR_UNKNOWN_CMD,
