@@ -19,7 +19,7 @@
 #include "can.h"
 #include "usb.h"
 
-#define CAN_RX_OBJECTS 30
+#define CAN_RX_OBJ 1
 
 void (*can_callback)(uint32_t, tCANMsgObject*);
 
@@ -81,7 +81,7 @@ void can_init(void (*can_callback_ptr)(uint32_t, tCANMsgObject*)) {
 
     // last in FIFO, clear FIFO flag
     can0_rx_msg.ui32Flags = MSG_OBJ_RX_INT_ENABLE | MSG_OBJ_USE_ID_FILTER;
-    CANMessageSet(CAN0_BASE, 1, &can0_rx_msg, MSG_OBJ_TYPE_RX);
+    CANMessageSet(CAN0_BASE, CAN_RX_OBJ, &can0_rx_msg, MSG_OBJ_TYPE_RX);
 
     CANIntRegister(CAN0_BASE, can0_rx_isr);
 
@@ -101,6 +101,16 @@ void can_disable(uint32_t bus) {
 
 void can_set_rate(uint32_t bus, uint32_t rate) {
     CANBitRateSet(get_base(bus), SysCtlClockGet(), rate);
+}
+
+void can_set_filter(uint32_t bus, uint32_t id, uint32_t mask) {
+    tCANMsgObject rx_msg;
+
+    rx_msg.ui32MsgID = id;
+    rx_msg.ui32MsgIDMask = mask;
+    rx_msg.ui32Flags = MSG_OBJ_RX_INT_ENABLE | MSG_OBJ_USE_ID_FILTER;
+
+    CANMessageSet(get_base(bus), CAN_RX_OBJ, &rx_msg, MSG_OBJ_TYPE_RX);
 }
 
 void can_send(uint32_t bus, tCANMsgObject *msg_ptr) {

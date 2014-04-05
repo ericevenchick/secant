@@ -32,6 +32,8 @@ uint32_t cmd_reset(int argc, char argv[CMD_MAX_ARGS][CMD_MAX_ARG_SIZE]) {
 uint32_t cmd_bus(int argc, char argv[CMD_MAX_ARGS][CMD_MAX_ARG_SIZE]) {
     int32_t bus;
     uint32_t bit_rate;
+    uint32_t id;
+    uint32_t mask;
 
     if (argc < 2) {
         // need at least bus and action args
@@ -62,6 +64,23 @@ uint32_t cmd_bus(int argc, char argv[CMD_MAX_ARGS][CMD_MAX_ARG_SIZE]) {
         // down: disable the bus
         can_disable(bus);
         return CMD_ERROR_NONE;
+    } else if (ustrcasecmp("filter", argv[2]) == 0) {
+        // filter: configure hardware filter
+        if (ustrcasecmp("set", argv[3]) == 0) {
+            // enable filter
+            id = ustrtoul(argv[4], NULL, 0);
+            mask = ustrtoul(argv[5], NULL, 0);
+            can_set_filter(bus, id, mask);
+
+            return CMD_ERROR_NONE;
+
+        } else if (ustrcasecmp("off", argv[3]) == 0) {
+            // disable filter
+            can_set_filter(bus, 0, 0);
+
+            return CMD_ERROR_NONE;
+
+        }
     }
 
     // no commands were handled, args must be invalid
