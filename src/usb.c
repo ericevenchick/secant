@@ -17,6 +17,7 @@
 #include "usb_serial_structs.h"
 #include "usb.h"
 
+#define RX_BUFFER_SIZE 100
 
 // globals
 //
@@ -286,8 +287,10 @@ RxHandler(void *pvCBData, uint32_t ui32Event, uint32_t ui32MsgValue,
           void *pvMsgData)
 {
     uint32_t ui32Count;
-    uint8_t c;
+    uint8_t rx[RX_BUFFER_SIZE];
+    uint32_t rx_size;
     uint32_t i;
+    uint32_t j;
 
     //
     // Which event are we being sent?
@@ -303,21 +306,24 @@ RxHandler(void *pvCBData, uint32_t ui32Event, uint32_t ui32MsgValue,
             // Feed some characters into the UART TX FIFO and enable the
             // interrupt so we are told when there is more space.
             //
-            USBBufferRead((tUSBBuffer *)&g_sRxBuffer,
-                            &c, 1);
-            if (c == '\r') {
-                // newline sent, parse the command
-                parse_cmd(cmd_buffer);
+            rx_size = USBBufferRead((tUSBBuffer *)&g_sRxBuffer,
+                            rx, RX_BUFFER_SIZE);
 
-                // clear the buffer
-                for (i = 0; i < sizeof(cmd_buffer); i++) {
-                    cmd_buffer[i] = '\0';
+            for (i = 0; i < rx_size; i++) {
+                if (rx[i] == '\r') {
+                    // newline sent, parse the command
+                    parse_cmd(cmd_buffer);
+
+                    // clear the buffer
+                    for (j = 0; j < sizeof(cmd_buffer); j++) {
+                        cmd_buffer[j] = '\0';
+                    }
+                    cmd_buffer_index = 0;
+                } else {
+                    // add the received character to the buffer
+                    cmd_buffer[cmd_buffer_index] = rx[i];
+                    cmd_buffer_index++;
                 }
-                cmd_buffer_index = 0;
-            } else {
-                // add the received character to the buffer
-                cmd_buffer[cmd_buffer_index] = c;
-                cmd_buffer_index++;
             }
 
             break;
