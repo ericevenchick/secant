@@ -3,3 +3,8 @@
 *.bin
 a.out
 *.swp
+
+# kicad temp files
+*-cache.lib
+*.bak
+*.bck
