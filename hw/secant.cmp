@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2013-may-18)-stable date = Tue 08 Apr 2014 01:21:21 PM EDT
+Cmp-Mod V01 Created by CvPcb (2013-may-18)-stable date = Thu 10 Apr 2014 12:30:09 PM EDT
 
 BeginCmp
 TimeStamp = /5341AD81;
@@ -10,28 +10,28 @@ EndCmp
 BeginCmp
 TimeStamp = /5340C1B1;
 Reference = C2;
-ValeurCmp = C;
+ValeurCmp = 0.1uF;
 IdModule  = SM0603;
 EndCmp
 
 BeginCmp
 TimeStamp = /5340C1AB;
 Reference = C3;
-ValeurCmp = C;
+ValeurCmp = 0.1uF;
 IdModule  = SM0603;
 EndCmp
 
 BeginCmp
 TimeStamp = /5340C1A5;
 Reference = C4;
-ValeurCmp = C;
+ValeurCmp = 0.1uF;
 IdModule  = SM0603;
 EndCmp
 
 BeginCmp
 TimeStamp = /5340C106;
 Reference = C5;
-ValeurCmp = C;
+ValeurCmp = 0.1uF;
 IdModule  = SM0603;
 EndCmp
 
@@ -52,21 +52,21 @@ EndCmp
 BeginCmp
 TimeStamp = /5340C0FA;
 Reference = C8;
-ValeurCmp = C;
+ValeurCmp = 1uF;
 IdModule  = SM0603;
 EndCmp
 
 BeginCmp
 TimeStamp = /5340C0F4;
 Reference = C9;
-ValeurCmp = C;
+ValeurCmp = 2.2uF;
 IdModule  = SM0603;
 EndCmp
 
 BeginCmp
 TimeStamp = /5340C0E7;
 Reference = C10;
-ValeurCmp = C;
+ValeurCmp = 0.1uF;
 IdModule  = SM0603;
 EndCmp
 
@@ -80,14 +80,14 @@ EndCmp
 BeginCmp
 TimeStamp = /5341A330;
 Reference = C12;
-ValeurCmp = C;
+ValeurCmp = 0.1uF;
 IdModule  = SM0603;
 EndCmp
 
 BeginCmp
 TimeStamp = /5341A1F7;
 Reference = C13;
-ValeurCmp = C;
+ValeurCmp = 0.1uF;
 IdModule  = SM0603;
 EndCmp
 
@@ -134,17 +134,10 @@ IdModule  = SM0603;
 EndCmp
 
 BeginCmp
-TimeStamp = /53426FD3;
-Reference = JP1;
-ValeurCmp = BUS1 TERM;
-IdModule  = SIL-2;
-EndCmp
-
-BeginCmp
-TimeStamp = /534274C4;
-Reference = JP2;
-ValeurCmp = BUS2 TERM;
-IdModule  = SIL-2;
+TimeStamp = /5346C503;
+Reference = C20;
+ValeurCmp = 0.1uF;
+IdModule  = SM0603;
 EndCmp
 
 BeginCmp
@@ -246,6 +239,20 @@ IdModule  = SM0603;
 EndCmp
 
 BeginCmp
+TimeStamp = /53426FD3;
+Reference = TERM1;
+ValeurCmp = BUS1 TERM;
+IdModule  = SIL-2;
+EndCmp
+
+BeginCmp
+TimeStamp = /534274C4;
+Reference = TERM2;
+ValeurCmp = BUS2 TERM;
+IdModule  = SIL-2;
+EndCmp
+
+BeginCmp
 TimeStamp = /53426753;
 Reference = TP1;
 ValeurCmp = TST;
@@ -318,6 +325,13 @@ EndCmp
 BeginCmp
 TimeStamp = /53426E5F;
 Reference = TP11;
+ValeurCmp = TST;
+IdModule  = PINTST;
+EndCmp
+
+BeginCmp
+TimeStamp = /5346D69E;
+Reference = TP12;
 ValeurCmp = TST;
 IdModule  = PINTST;
 EndCmp
